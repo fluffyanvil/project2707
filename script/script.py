@@ -80,6 +80,8 @@ with open(path) as inputFile:
             dumpDict2 = {}
 
             for rowfd in rows:
+                if (len(rowfd[ProjectNumber]) == 0):
+                    continue
                 dumpDict1[(rowfd[ProjectNumber], rowfd[ResellerCode])] = {
                    ProjectNumber: rowfd[ProjectNumber],
                    ProductionNumber: rowfd[ProductionNumber],
@@ -87,6 +89,8 @@ with open(path) as inputFile:
                    ResellerCode: rowfd[ResellerCode],
                    }
             for rowfd in rows:
+                if (len(rowfd[ProjectNumber]) == 0):
+                    continue
                 dumpDict2[rowfd[ProjectNumber]] = {
                    ProjectNumber: rowfd[ProjectNumber],
                    ProductionNumber: rowfd[ProductionNumber],
@@ -118,15 +122,16 @@ with open(path) as inputFile:
                 
                 _reference2 = row[REFERENCE2]
                 _reference3 = row[REFERENCE3]
-                if (_reference2,_reference3) in dumpDict1:
-                    newrow[ProjectNumber] = dumpDict1[(_reference2,_reference3)][ProjectNumber]
-                    newrow[ProductionNumber] = dumpDict1[(_reference2,_reference3)][ProductionNumber]
-                    newrow[ContractId] = dumpDict1[(_reference2,_reference3)][ContractId]
-                    newrow[ResellerCode] = dumpDict1[(_reference2,_reference3)][ResellerCode]
-                elif (_reference2) in dumpDict2:
-                    newrow[ProjectNumber] = dumpDict2[(_reference2)][ProjectNumber]
-                    newrow[ProductionNumber] = dumpDict2[(_reference2)][ProductionNumber]
-                    newrow[ContractId] = dumpDict2[(_reference2)][ContractId]
+                if (len(_reference2) > 0):
+                    if (_reference2,_reference3) in dumpDict1:
+                        newrow[ProjectNumber] = dumpDict1[(_reference2,_reference3)][ProjectNumber]
+                        newrow[ProductionNumber] = dumpDict1[(_reference2,_reference3)][ProductionNumber]
+                        newrow[ContractId] = dumpDict1[(_reference2,_reference3)][ContractId]
+                        newrow[ResellerCode] = dumpDict1[(_reference2,_reference3)][ResellerCode]
+                    elif (_reference2) in dumpDict2:
+                        newrow[ProjectNumber] = dumpDict2[(_reference2)][ProjectNumber]
+                        newrow[ProductionNumber] = dumpDict2[(_reference2)][ProductionNumber]
+                        newrow[ContractId] = dumpDict2[(_reference2)][ContractId]
                 output_csv_writer.writerow(newrow)
 
 ######Part2########################################
