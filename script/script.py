@@ -15,7 +15,7 @@ file =os.path.splitext(os.path.basename(path))[0]
 fulldump =os.path.splitext(os.path.basename(pathFulldump))[0]
 folder = os.path.dirname(path)
 
-REFERENCE2 = 'REFERENCE 2 (orig)'
+REFERENCE2 = 'REFERENCE 2'
 REFERENCE3 = 'REFERENCE 3'
 ProjectNumber = 'ProjectNumber'
 ResellerCode = 'ResellerCode'
@@ -48,6 +48,8 @@ start_time = time.time()
 with open(path) as inputFile:
     input_csv_reader = csv.DictReader(inputFile, delimiter=';')   
     filename = os.path.join(folder, f'{file}.output.csv')
+    
+    modified_input = filename;
     with open(filename, 'w', newline='') as outfile:
         fieldnames = [PROJECTGRP_TEXT
                     ,PROJECT
@@ -82,7 +84,7 @@ with open(path) as inputFile:
             for rowfd in rows:
                 if (len(rowfd[ProjectNumber]) == 0):
                     continue
-                dumpDict1[(rowfd[ProjectNumber], rowfd[ResellerCode])] = {
+                dumpDict1[str(rowfd[ProjectNumber]), str(rowfd[ResellerCode])] = {
                    ProjectNumber: rowfd[ProjectNumber],
                    ProductionNumber: rowfd[ProductionNumber],
                    ContractId: rowfd[ContractId],
@@ -91,7 +93,7 @@ with open(path) as inputFile:
             for rowfd in rows:
                 if (len(rowfd[ProjectNumber]) == 0):
                     continue
-                dumpDict2[rowfd[ProjectNumber]] = {
+                dumpDict2[str(rowfd[ProjectNumber])] = {
                    ProjectNumber: rowfd[ProjectNumber],
                    ProductionNumber: rowfd[ProductionNumber],
                    ContractId: rowfd[ContractId]
@@ -120,8 +122,8 @@ with open(path) as inputFile:
                         ,PS_LEVEL: row[PS_LEVEL]
                         ,BIC_ZWBSSP: row[BIC_ZWBSSP]}
                 
-                _reference2 = row[REFERENCE2]
-                _reference3 = row[REFERENCE3]
+                _reference2 = str(row[REFERENCE2])
+                _reference3 = str(row[REFERENCE3])
                 if (len(_reference2) > 0):
                     if (_reference2,_reference3) in dumpDict1:
                         newrow[ProjectNumber] = dumpDict1[(_reference2,_reference3)][ProjectNumber]
@@ -137,7 +139,7 @@ with open(path) as inputFile:
 ######Part2########################################
 with open(pathFulldump) as inputFulldump: 
     fulldump_csv_reader = csv.DictReader(inputFulldump, delimiter=';')    
-    with open(path) as inputFile:
+    with open(modified_input) as inputFile:
         input_csv_reader = csv.DictReader(inputFile, delimiter=';')
         filename = os.path.join(folder, f'{fulldump}.output.csv')
         with open(filename, 'w', newline='') as outfile:
@@ -153,17 +155,17 @@ with open(pathFulldump) as inputFulldump:
             dumpDict2 = {}
 
             for rowfd in rows:
-                dumpDict1[(rowfd[REFERENCE2], rowfd[REFERENCE3])] = object()
+                dumpDict1[str(rowfd[REFERENCE2]), str(rowfd[REFERENCE3])] = object()
 
             for rowfd in rows:
-                dumpDict2[rowfd[REFERENCE2]] = object()
+                dumpDict2[str(rowfd[REFERENCE2])] = object()
 
             for rowfd in fulldump_csv_reader:
                 newrow = rowfd
                 newrow['Match'] = 'N'
 
-                _projectNumber = rowfd[ProjectNumber]
-                _resellerCode = rowfd[ResellerCode]
+                _projectNumber = str(rowfd[ProjectNumber])
+                _resellerCode = str(rowfd[ResellerCode])
 
                 if (_projectNumber, _resellerCode) in dumpDict1:
                     newrow['Match'] = 'Y'
