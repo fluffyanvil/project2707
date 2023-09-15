@@ -78,29 +78,43 @@ with open(path) as inputFile:
 
             rows = list(fulldump_csv_reader)
 
+#index with ProjectNumber and ResellerCode
             dumpDict1 = {}
-            dumpDict2 = {}
+            
+#index with ProjectNumber and empty ResellerCode
+            dumpDict2 = {}            
 
             for rowfd in rows:
-                if (len(rowfd[ProjectNumber]) == 0):
+                pr_num = str(rowfd[ProjectNumber]).strip();
+                res_code = str(rowfd[ResellerCode]).strip();
+                
+                if (len(pr_num) == 0):
                     continue
-                dumpDict1[str(rowfd[ProjectNumber]), str(rowfd[ResellerCode])] = {
-                   ProjectNumber: rowfd[ProjectNumber],
-                   ProductionNumber: rowfd[ProductionNumber],
-                   ContractId: rowfd[ContractId],
-                   ResellerCode: rowfd[ResellerCode],
-                   }
-            for rowfd in rows:
-                if (len(rowfd[ProjectNumber]) == 0):
-                    continue
-                dumpDict2[str(rowfd[ProjectNumber])] = {
-                   ProjectNumber: rowfd[ProjectNumber],
-                   ProductionNumber: rowfd[ProductionNumber],
-                   ContractId: rowfd[ContractId]
-                   }
+                
+                if (len(pr_num) > 0 and len(res_code) > 0):
+                    dumpDict1[pr_num, res_code] = {
+                       ProjectNumber: str(rowfd[ProjectNumber]).strip(),
+                       ProductionNumber: str(rowfd[ProductionNumber]).strip(),
+                       ContractId: str(rowfd[ContractId]).strip(),
+                       ResellerCode: str(rowfd[ResellerCode]).strip(),
+                       }
+                if (len(pr_num) > 0):
+                    dumpDict2[pr_num] = {
+                       ProjectNumber: str(rowfd[ProjectNumber]).strip(),
+                       ProductionNumber: str(rowfd[ProductionNumber]).strip(),
+                       ContractId: str(rowfd[ContractId]).strip(),
+                       }
+                
 
+            ref23_fill = 0
+            ref2_fill = 0
+            no_fill = 0
+            rows = list(input_csv_reader)
+            for row in rows:
 
-            for row in input_csv_reader:
+                _reference2 = str(row[REFERENCE2]).strip()
+                _reference3 = str(row[REFERENCE3]).strip()                
+
                 newrow = {
                             PROJECTGRP_TEXT:row[PROJECTGRP_TEXT]
                         ,PROJECT: row[PROJECT]
@@ -112,8 +126,8 @@ with open(path) as inputFile:
                         ,ProductionNumber: ''
                         ,ContractId: ''
                         ,ResellerCode: ''
-                        ,REFERENCE2: row[REFERENCE2]
-                        ,REFERENCE3: row[REFERENCE3]
+                        ,REFERENCE2: _reference2
+                        ,REFERENCE3: _reference3
                         ,COMP_CODE: row[COMP_CODE]
                         ,PS_XSTAT: row[PS_XSTAT]
                         ,PROFIT_CTR: row[PROFIT_CTR]
@@ -122,20 +136,32 @@ with open(path) as inputFile:
                         ,PS_LEVEL: row[PS_LEVEL]
                         ,BIC_ZWBSSP: row[BIC_ZWBSSP]}
                 
-                _reference2 = str(row[REFERENCE2])
-                _reference3 = str(row[REFERENCE3])
-                if (len(_reference2) > 0):
-                    if (_reference2,_reference3) in dumpDict1:
-                        newrow[ProjectNumber] = dumpDict1[(_reference2,_reference3)][ProjectNumber]
-                        newrow[ProductionNumber] = dumpDict1[(_reference2,_reference3)][ProductionNumber]
-                        newrow[ContractId] = dumpDict1[(_reference2,_reference3)][ContractId]
-                        newrow[ResellerCode] = dumpDict1[(_reference2,_reference3)][ResellerCode]
-                    elif (_reference2) in dumpDict2:
-                        newrow[ProjectNumber] = dumpDict2[(_reference2)][ProjectNumber]
-                        newrow[ProductionNumber] = dumpDict2[(_reference2)][ProductionNumber]
-                        newrow[ContractId] = dumpDict2[(_reference2)][ContractId]
+                if (len(_reference2) == 0):
+                    no_fill+=1
+                elif (len(_reference2) > 0 and len(_reference3) > 0):
+                    if (_reference2, _reference3) in dumpDict1:
+                        r = dumpDict1[(_reference2, _reference3)]
+                        newrow[ProjectNumber] = str(r[ProjectNumber]).strip()
+                        newrow[ProductionNumber] = str(r[ProductionNumber]).strip()
+                        newrow[ContractId] = str(r[ContractId]).strip()
+                        newrow[ResellerCode] = str(r[ResellerCode]).strip()
+                        ref23_fill+=1
+                    else:
+                        no_fill+=1
+                elif (len(_reference2) > 0):
+                    if (_reference2) in dumpDict2:
+                        r = dumpDict2[(_reference2)]
+                        newrow[ProjectNumber] = str(r[ProjectNumber]).strip()
+                        newrow[ProductionNumber] = str(r[ProductionNumber]).strip()
+                        newrow[ContractId] = str(r[ContractId]).strip()
+                        ref2_fill+=1
+                    else:
+                        no_fill+=1
+                    
                 output_csv_writer.writerow(newrow)
 
+
+print("--- Populated: REFERENCE2+REFERENCE3 = %s, REFERENCE2 = %s, NOFILL = %s ---" % (ref23_fill, ref2_fill, no_fill))
 ######Part2########################################
 with open(pathFulldump) as inputFulldump: 
     fulldump_csv_reader = csv.DictReader(inputFulldump, delimiter=';')    
@@ -155,25 +181,39 @@ with open(pathFulldump) as inputFulldump:
             dumpDict2 = {}
 
             for rowfd in rows:
-                dumpDict1[str(rowfd[REFERENCE2]), str(rowfd[REFERENCE3])] = object()
+                
+                _reference2 = str(rowfd[REFERENCE2]).strip()
+                _reference3 = str(rowfd[REFERENCE3]).strip()
+                if (len(_reference2) == 0):
+                    continue
+                if (len(_reference3) > 0):
+                    dumpDict1[_reference2, _reference3] = object()
+                dumpDict2[_reference2] = object()
+                
 
-            for rowfd in rows:
-                dumpDict2[str(rowfd[REFERENCE2])] = object()
-
+            y = 0
+            n = 0
+            p = 0
+            
             for rowfd in fulldump_csv_reader:
-                newrow = rowfd
-                newrow['Match'] = 'N'
+                newrow = rowfd                
 
-                _projectNumber = str(rowfd[ProjectNumber])
-                _resellerCode = str(rowfd[ResellerCode])
-
-                if (_projectNumber, _resellerCode) in dumpDict1:
+                _projectNumber = str(rowfd[ProjectNumber]).strip()
+                _resellerCode = str(rowfd[ResellerCode]).strip()
+                
+                if (len(_projectNumber) > 0 and len(_resellerCode) > 0 and (_projectNumber, _resellerCode) in dumpDict1):
                     newrow['Match'] = 'Y'
-                elif _projectNumber in dumpDict2:
+                    y+=1
+                elif (len(_projectNumber) > 0 and _projectNumber in dumpDict2):       
                     newrow['Match'] = 'P'
+                    p+=1  
+                else:
+                    newrow['Match'] = 'N'
+                    n+=1 
 
                 output_csv_writer.writerow(newrow)
-                continue
+
+print("--- Matches: Y = %s, P = %s, N = %s ---" % (y, p, n))
 print("--- %s seconds ---" % (time.time() - start_time))
                     
 
