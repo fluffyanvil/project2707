@@ -44,6 +44,7 @@ WBS = 'WBS'
 AssetId = 'AssetId'
 
 ######Part1#####################################################
+# populate WBS with WON2SAP data
 start_time = time.time()
 with open(path) as inputFile:
     input_csv_reader = csv.DictReader(inputFile, delimiter=';')   
@@ -83,14 +84,14 @@ with open(path) as inputFile:
             
 #index with ProjectNumber and empty ResellerCode
             dumpDict2 = {}            
-
+# fill index for full match (ProjectNumber + ResellerCode)
             for rowfd in rows:
                 pr_num = str(rowfd[ProjectNumber]).strip();
                 res_code = str(rowfd[ResellerCode]).strip();
                 
                 if (len(pr_num) == 0):
                     continue
-                
+                # fill only if ProljectNumber and ResellerCode not empty
                 if (len(pr_num) > 0 and len(res_code) > 0):
                     dumpDict1[pr_num, res_code] = {
                        ProjectNumber: str(rowfd[ProjectNumber]).strip(),
@@ -98,7 +99,7 @@ with open(path) as inputFile:
                        ContractId: str(rowfd[ContractId]).strip(),
                        ResellerCode: str(rowfd[ResellerCode]).strip(),
                        }
-                    # index for partial matching with ProjectNumber
+# fill index for full match (ProjectNumber)
                 # if (len(pr_num) > 0):
                 #     dumpDict2[pr_num] = {
                 #        ProjectNumber: str(rowfd[ProjectNumber]).strip(),
@@ -106,7 +107,7 @@ with open(path) as inputFile:
                 #        ContractId: str(rowfd[ContractId]).strip(),
                 #        }
                 
-
+# counters for fillings
             ref23_fill = 0
             ref2_fill = 0
             no_fill = 0
@@ -136,9 +137,10 @@ with open(path) as inputFile:
                         ,STATUSSYS0: row[STATUSSYS0]
                         ,PS_LEVEL: row[PS_LEVEL]
                         ,BIC_ZWBSSP: row[BIC_ZWBSSP]}
-                
+ # if REFERENCE 2 in WBS is empty, skip               
                 if (len(_reference2) == 0):
                     no_fill+=1
+ # if REFERENCE 2 and REFERENCE 3 is not empty, try find match in index (dumpDict1)
                 elif (len(_reference2) > 0 and len(_reference3) > 0):
                     if (_reference2, _reference3) in dumpDict1:
                         r = dumpDict1[(_reference2, _reference3)]
@@ -149,6 +151,7 @@ with open(path) as inputFile:
                         ref23_fill+=1
                     else:
                         no_fill+=1
+ # if REFERENCE 3 is emplty and  REFERENCE 2 is not empty, try find match in index (dumpDict2) - patrial matching
                 # elif (len(_reference2) > 0):
                 #     if (_reference2) in dumpDict2:
                 #         r = dumpDict2[(_reference2)]
@@ -164,6 +167,7 @@ with open(path) as inputFile:
 
 print("--- Populated: REFERENCE2+REFERENCE3 = %s, REFERENCE2 = %s, NOFILL = %s ---" % (ref23_fill, ref2_fill, no_fill))
 ######Part2########################################
+# populating WON2SAP__fulldump with WBS data
 with open(pathFulldump) as inputFulldump: 
     fulldump_csv_reader = csv.DictReader(inputFulldump, delimiter=';')    
     with open(modified_input) as inputFile:
