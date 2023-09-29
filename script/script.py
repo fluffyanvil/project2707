@@ -5,8 +5,8 @@ import time
 
 parser = argparse.ArgumentParser(description="Split csv grouped by specified column",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("-f", "--file", help="input .csv file", required=True)
-parser.add_argument("-fd", "--fulldump", help="input fulldump .csv file", required=True)
+parser.add_argument("-f", "--file", help="input .csv file, example, WBS.csv", required=True)
+parser.add_argument("-fd", "--fulldump", help="input fulldump .csv file, example WON2SAP__fulldump.csv", required=True)
 args = parser.parse_args()
 config = vars(args)
 path = args.file
@@ -98,12 +98,13 @@ with open(path) as inputFile:
                        ContractId: str(rowfd[ContractId]).strip(),
                        ResellerCode: str(rowfd[ResellerCode]).strip(),
                        }
-                if (len(pr_num) > 0):
-                    dumpDict2[pr_num] = {
-                       ProjectNumber: str(rowfd[ProjectNumber]).strip(),
-                       ProductionNumber: str(rowfd[ProductionNumber]).strip(),
-                       ContractId: str(rowfd[ContractId]).strip(),
-                       }
+                    # index for partial matching with ProjectNumber
+                # if (len(pr_num) > 0):
+                #     dumpDict2[pr_num] = {
+                #        ProjectNumber: str(rowfd[ProjectNumber]).strip(),
+                #        ProductionNumber: str(rowfd[ProductionNumber]).strip(),
+                #        ContractId: str(rowfd[ContractId]).strip(),
+                #        }
                 
 
             ref23_fill = 0
@@ -148,15 +149,15 @@ with open(path) as inputFile:
                         ref23_fill+=1
                     else:
                         no_fill+=1
-                elif (len(_reference2) > 0):
-                    if (_reference2) in dumpDict2:
-                        r = dumpDict2[(_reference2)]
-                        newrow[ProjectNumber] = str(r[ProjectNumber]).strip()
-                        newrow[ProductionNumber] = str(r[ProductionNumber]).strip()
-                        newrow[ContractId] = str(r[ContractId]).strip()
-                        ref2_fill+=1
-                    else:
-                        no_fill+=1
+                # elif (len(_reference2) > 0):
+                #     if (_reference2) in dumpDict2:
+                #         r = dumpDict2[(_reference2)]
+                #         newrow[ProjectNumber] = str(r[ProjectNumber]).strip()
+                #         newrow[ProductionNumber] = str(r[ProductionNumber]).strip()
+                #         newrow[ContractId] = str(r[ContractId]).strip()
+                #         ref2_fill+=1
+                #     else:
+                #         no_fill+=1
                     
                 output_csv_writer.writerow(newrow)
 
