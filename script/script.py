@@ -100,12 +100,12 @@ with open(path) as inputFile:
                        ResellerCode: str(rowfd[ResellerCode]).strip(),
                        }
 # fill index for full match (ProjectNumber)
-                # if (len(pr_num) > 0):
-                #     dumpDict2[pr_num] = {
-                #        ProjectNumber: str(rowfd[ProjectNumber]).strip(),
-                #        ProductionNumber: str(rowfd[ProductionNumber]).strip(),
-                #        ContractId: str(rowfd[ContractId]).strip(),
-                #        }
+                if (len(pr_num) > 0):
+                    dumpDict2[pr_num] = {
+                       ProjectNumber: str(rowfd[ProjectNumber]).strip(),
+                       ProductionNumber: str(rowfd[ProductionNumber]).strip(),
+                       ContractId: str(rowfd[ContractId]).strip(),
+                       }
                 
 # counters for fillings
             ref23_fill = 0
@@ -152,15 +152,15 @@ with open(path) as inputFile:
                     else:
                         no_fill+=1
  # if REFERENCE 3 is emplty and  REFERENCE 2 is not empty, try find match in index (dumpDict2) - patrial matching
-                # elif (len(_reference2) > 0):
-                #     if (_reference2) in dumpDict2:
-                #         r = dumpDict2[(_reference2)]
-                #         newrow[ProjectNumber] = str(r[ProjectNumber]).strip()
-                #         newrow[ProductionNumber] = str(r[ProductionNumber]).strip()
-                #         newrow[ContractId] = str(r[ContractId]).strip()
-                #         ref2_fill+=1
-                #     else:
-                #         no_fill+=1
+                elif (len(_reference2) > 0):
+                    if (_reference2) in dumpDict2:
+                        r = dumpDict2[(_reference2)]
+                        newrow[ProjectNumber] = str(r[ProjectNumber]).strip()
+                        newrow[ProductionNumber] = str(r[ProductionNumber]).strip()
+                        newrow[ContractId] = str(r[ContractId]).strip()
+                        ref2_fill+=1
+                    else:
+                        no_fill+=1
                     
                 output_csv_writer.writerow(newrow)
 
@@ -209,7 +209,7 @@ with open(pathFulldump) as inputFulldump:
                 if (len(_projectNumber) > 0 and len(_resellerCode) > 0 and (_projectNumber, _resellerCode) in dumpDict1):
                     newrow['Match'] = 'Y'
                     y+=1
-                elif (len(_projectNumber) > 0 and _projectNumber in dumpDict2):       
+                elif (len(_projectNumber) > 0 and len(_resellerCode) > 0 and _projectNumber in dumpDict2):       
                     newrow['Match'] = 'P'
                     p+=1  
                 else:
