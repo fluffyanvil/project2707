@@ -12,7 +12,7 @@
     <Name>script</Name>
     <RootNamespace>script</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>-f "WBS dump from SAP 5th Sep.csv" -fd WON2SAP__fulldump.csv</CommandLineArguments>
+    <CommandLineArguments>-f "tvm_wbs_2024-04-09-071028.csv" -fd "WON2SAP__2024-04-08_PROD.csv"</CommandLineArguments>
     <InterpreterPath>C:\Users\serge\AppData\Local\Programs\Python\Python311\python.exe</InterpreterPath>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>

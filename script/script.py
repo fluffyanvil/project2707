@@ -46,12 +46,12 @@ AssetId = 'AssetId'
 ######Part1#####################################################
 # populate WBS with WON2SAP data
 start_time = time.time()
-with open(path) as inputFile:
+with open(path, encoding="utf-8") as inputFile:
     input_csv_reader = csv.DictReader(inputFile, delimiter=';')   
     filename = os.path.join(folder, f'{file}.output.csv')
     
     modified_input = filename;
-    with open(filename, 'w', newline='') as outfile:
+    with open(filename, 'w', newline='', encoding="utf-8") as outfile:
         fieldnames = [PROJECTGRP_TEXT
                     ,PROJECT
                     ,PROJECT_TEXT
@@ -74,7 +74,7 @@ with open(path) as inputFile:
         output_csv_writer = csv.DictWriter(outfile, fieldnames=fieldnames, delimiter=';')
         output_csv_writer.writeheader()
 
-        with open(pathFulldump) as inputFulldump:      
+        with open(pathFulldump, encoding="utf-8") as inputFulldump:      
             fulldump_csv_reader = csv.DictReader(inputFulldump, delimiter=';')
 
             rows = list(fulldump_csv_reader)
@@ -168,12 +168,12 @@ with open(path) as inputFile:
 print("--- Populated: REFERENCE2+REFERENCE3 = %s, REFERENCE2 = %s, NOFILL = %s ---" % (ref23_fill, ref2_fill, no_fill))
 ######Part2########################################
 # populating WON2SAP__fulldump with WBS data
-with open(pathFulldump) as inputFulldump: 
+with open(pathFulldump, encoding="utf-8") as inputFulldump: 
     fulldump_csv_reader = csv.DictReader(inputFulldump, delimiter=';')    
-    with open(modified_input) as inputFile:
+    with open(modified_input, encoding="utf-8") as inputFile:
         input_csv_reader = csv.DictReader(inputFile, delimiter=';')
         filename = os.path.join(folder, f'{fulldump}.output.csv')
-        with open(filename, 'w', newline='') as outfile:
+        with open(filename, 'w', newline='', encoding="utf-8") as outfile:
 
             header = next(fulldump_csv_reader)            
             fieldnames = list(header.keys()) + ['Match']
