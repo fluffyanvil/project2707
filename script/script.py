@@ -74,7 +74,7 @@ with open(path, encoding="utf-8") as inputFile:
         output_csv_writer = csv.DictWriter(outfile, fieldnames=fieldnames, delimiter=';')
         output_csv_writer.writeheader()
 
-        with open(pathFulldump, encoding="utf-8") as inputFulldump:      
+        with open(pathFulldump) as inputFulldump:      
             fulldump_csv_reader = csv.DictReader(inputFulldump, delimiter=';')
 
             rows = list(fulldump_csv_reader)
